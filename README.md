@@ -48,3 +48,9 @@ Thing to add next:
 - Investigating in new ways of improving even further the accuracy and viewing angle.
 - Trying to support PS2/XBox or other old hardware. If somebody can help me with the PS2/XBox protocol, that would be great :)
 - Add a RGB LED support for status/mode control and errors. 
+
+External libraries used from DFRobot, Jonathan Edgecome and Matthew Heironimus (big thanks to them). 
+You can find them here:
+https://github.com/DFRobot/DFRobotIRPosition
+https://github.com/jonathanedgecombe/absmouse
+https://github.com/MHeironimus/ArduinoJoystickLibrary
