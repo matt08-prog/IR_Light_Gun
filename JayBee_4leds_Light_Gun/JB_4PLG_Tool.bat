@@ -65,7 +65,7 @@ cls
 echo.
 echo ==================================================================
 echo.
-echo          Do you really want to flash the firmware ? 
+echo      		Flash the normal or test firmware ? 
 echo.
 echo         /!\    Don't flash the wrong firmware,    /!\
 echo         /!\    you might damage your hardware!    /!\
@@ -74,13 +74,27 @@ echo          Read the forum topic for more informations.
 echo.
 echo ==================================================================
 echo.
-SET /P FIRMTYPE=(Y: Yes, N: No)?
+SET /P FIRMTYPE=(N: NORMAL, T: TEST, C: Cancel)?
 
-IF /I "%FIRMTYPE%"=="Y" GOTO FLASH
+IF /I "%FIRMTYPE%"=="N" GOTO NFIRM
+IF /I "%FIRMTYPE%"=="T" GOTO TFIRM
 goto MAIN
 
-:FLASH
+:NFIRM
 for /f %%a in ('dir /B /a-d *leonardo.hex') do set hexfile=%%a
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "Caption LIKE '%%Arduino%%'" Get DeviceID ^| FIND "COM"`) do set comport1=%%B
+mode %comport1% BAUD=1200 PARITY=n DATA=8
+TIMEOUT 3 /NOBREAK
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "Caption LIKE '%%bootloader%%'" Get DeviceID ^| FIND "COM"`) do set comport2=%%B
+if "%comport2%"=="" (
+TIMEOUT 3 /NOBREAK
+for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "Caption LIKE '%%bootloader%%'" Get DeviceID ^| FIND "COM"`) do set comport2=%%B
+)
+avrdude -C avrdude.conf -v -patmega32u4 -cavr109 -P%comport2% -b57600 -D -Uflash:w:%hexfile%:i
+goto CLREEP
+
+:TFIRM
+for /f %%a in ('dir /B /a-d *leonardo.test.hex') do set hexfile=%%a
 for /f "usebackq" %%B in (`wmic path Win32_SerialPort Where "Caption LIKE '%%Arduino%%'" Get DeviceID ^| FIND "COM"`) do set comport1=%%B
 mode %comport1% BAUD=1200 PARITY=n DATA=8
 TIMEOUT 3 /NOBREAK
